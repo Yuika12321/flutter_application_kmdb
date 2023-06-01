@@ -53,7 +53,7 @@ class _MainPageState extends State<MainPage> {
       builder: (context) => Container(
         padding: const EdgeInsets.all(10),
         decoration: const BoxDecoration(
-            color: Colors.red,
+            color: Colors.cyanAccent,
             borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(10), topRight: Radius.circular(10))),
         height: 200,
