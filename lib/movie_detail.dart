@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:readmore/readmore.dart';
+import 'package:flutter_image_slideshow/flutter_image_slideshow.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class MovieDetail extends StatelessWidget {
   Map<String, dynamic> movie;
@@ -9,7 +11,21 @@ class MovieDetail extends StatelessWidget {
   Widget build(BuildContext context) {
     var movieTitle =
         movie['title'].toString().replaceAll('!HS', '').replaceAll('!HE', '');
-    var posters = movie['posters'].split('|')[0];
+    dynamic titleImage = movie['posters'].toString().isEmpty
+        ? Image.asset('asset/images/no-image.jpg')
+        : Image.network(movie['posters'].toString().split('|')[0]);
+    // var stills = movie['stlls'].toString().split('|');
+    List<Widget> stills = [];
+    if (movie['stlls'].toString().isEmpty) {
+      stills.add(Image.asset(
+        'asset/images/no-image.jpg',
+        fit: BoxFit.fitHeight,
+      ));
+    } else {
+      for (var k in movie['stlls'].toString().split('|')) {
+        stills.add(Image.network(k, fit: BoxFit.fitHeight));
+      }
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -18,11 +34,14 @@ class MovieDetail extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Text(movieTitle),
+            Text(
+              movieTitle,
+              style: const TextStyle(fontSize: 30),
+            ),
             Row(
               children: [
                 Text(movie['keywords']),
-                Hero(tag: movie['movieSeq'], child: Image.network(posters))
+                Hero(tag: movie['movieSeq'], child: titleImage)
               ],
             ),
             ReadMoreText(
@@ -40,9 +59,22 @@ class MovieDetail extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                   color: Colors.lightBlueAccent),
             ),
+            ImageSlideshow(
+                autoPlayInterval: 3000,
+                isLoop: true,
+                width: double.infinity,
+                height: 200,
+                children: stills),
+            ElevatedButton(
+                onPressed: () {
+                  launchUrl(Uri.parse(movie['kmdbUrl'].toString()));
+                },
+                child: const Text('사이트 연결'))
           ],
         ),
       ),
     );
   }
 }
+
+//flutter run -d chrome --web-renderer html
